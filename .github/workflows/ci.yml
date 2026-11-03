@@ -64,3 +64,9 @@ jobs:
 
       - name: Build
         run: npm run build -- --configuration production
+
+      - name: Verify Tailwind utilities
+        run: |
+          grep -q '\.flex{' dist/frontend/browser/styles-*.css
+          grep -q '\.px-7{' dist/frontend/browser/styles-*.css
+          grep -q '\.grid-cols-2{' dist/frontend/browser/styles-*.css
