@@ -1,5 +1,6 @@
 import logging
 import os
+from hmac import compare_digest
 
 import discord
 from aiohttp import web
@@ -10,6 +11,16 @@ PORT = int(os.getenv("BOT_NOTIFY_PORT", "8766"))
 
 
 async def _handle_notify(request: web.Request) -> web.Response:
+    api_token = os.getenv("API_TOKEN", "")
+    authorization = request.headers.get("Authorization", "")
+    scheme, _, token = authorization.partition(" ")
+    if (
+        not api_token
+        or scheme.lower() != "bearer"
+        or not compare_digest(token, api_token)
+    ):
+        return web.json_response({"error": "unauthorized"}, status=401)
+
     try:
         data = await request.json()
     except Exception:
@@ -33,7 +44,9 @@ async def _handle_notify(request: web.Request) -> web.Response:
 
     kwargs: dict = {
         "title": f"Nouveaux épisodes — {title}",
-        "description": f"**{new_count}** nouvel(s) épisode(s) disponible(s) ({total} au total)",
+        "description": (
+            f"**{new_count}** nouvel(s) épisode(s) disponible(s) ({total} au total)"
+        ),
         "color": 0xA7D129,
     }
     if url:
@@ -47,9 +60,19 @@ async def _handle_notify(request: web.Request) -> web.Response:
     if url or app_url:
         view = discord.ui.View()
         if url:
-            view.add_item(discord.ui.Button(label="Voir la série", url=url, style=discord.ButtonStyle.link))
+            view.add_item(
+                discord.ui.Button(
+                    label="Voir la série", url=url, style=discord.ButtonStyle.link
+                )
+            )
         if app_url:
-            view.add_item(discord.ui.Button(label="Télécharger dans l'app", url=app_url, style=discord.ButtonStyle.link))
+            view.add_item(
+                discord.ui.Button(
+                    label="Télécharger dans l'app",
+                    url=app_url,
+                    style=discord.ButtonStyle.link,
+                )
+            )
 
     await channel.send(embed=embed, view=view)
     return web.json_response({"ok": True})

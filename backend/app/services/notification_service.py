@@ -193,7 +193,10 @@ class NotificationScheduler:
         try:
             async with aiohttp.ClientSession() as http:
                 async with http.post(
-                    settings.bot_notify_url, json=payload, timeout=timeout
+                    settings.bot_notify_url,
+                    json=payload,
+                    timeout=timeout,
+                    headers={"Authorization": f"Bearer {settings.api_token}"},
                 ) as resp:
                     if resp.status >= 400:
                         logger.warning(

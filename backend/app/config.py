@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     discord_token: str = ""
     discord_guild: str = ""
+    api_token: str = ""
     debrid_provider: DebridProvider = DebridProvider.ALLDEBRID
     alldebrid_api_key: str = ""
     realdebrid_api_token: str = ""

@@ -12,7 +12,7 @@ humains, à Codex et à Claude Code.
 - [x] Remplacer les chaînes libres de `media_type`, `status` et `source` par des
   types ou enums partagés. Les alias historiques du bot sont normalisés par le
   backend.
-- [ ] Authentifier les endpoints HTTP et WebSocket, ainsi que le serveur interne
+- [x] Authentifier les endpoints HTTP et WebSocket, ainsi que le serveur interne
   de notification du bot, avant toute exposition publique hors réseau de confiance.
 - [ ] Ajouter des limites de requêtes et de taille de file pour empêcher le spam,
   l'épuisement du quota debrid et le remplissage du disque.

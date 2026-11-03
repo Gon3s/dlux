@@ -5,18 +5,18 @@ import sys
 from pathlib import Path
 
 import discord
-from discord.ext import commands
-from dotenv import load_dotenv
-
 from client import BackendClient
 from cogs.download import DownloadCog
 from cogs.search import SearchCog
+from discord.ext import commands
+from dotenv import load_dotenv
 from notify_server import start_notify_server
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 TOKEN = os.getenv("DISCORD_TOKEN", "")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+API_TOKEN = os.getenv("API_TOKEN", "")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,12 +34,15 @@ async def main() -> None:
     if not TOKEN:
         logger.error("DISCORD_TOKEN non défini dans .env")
         sys.exit(1)
+    if not API_TOKEN:
+        logger.error("API_TOKEN non défini dans .env")
+        sys.exit(1)
 
     intents = discord.Intents.default()
     intents.message_content = True
 
     bot = commands.Bot(command_prefix="!", intents=intents)
-    backend = BackendClient(BACKEND_URL)
+    backend = BackendClient(BACKEND_URL, API_TOKEN)
 
     await bot.add_cog(SearchCog(bot, backend))
     await bot.add_cog(DownloadCog(bot, backend))

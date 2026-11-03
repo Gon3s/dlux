@@ -6,6 +6,7 @@ services:
     environment:
       SELENIUM_BINARY_LOCATION: /usr/bin/chromium
       DATABASE_URL: sqlite+aiosqlite:////app/data/dl_bot.db
+      API_TOKEN: ${API_TOKEN:?API_TOKEN is required}
       DEBRID_PROVIDER: ${DEBRID_PROVIDER:-alldebrid}
       ALLDEBRID_API_KEY: ${ALLDEBRID_API_KEY:-}
       REALDEBRID_API_TOKEN: ${REALDEBRID_API_TOKEN:-}
@@ -24,6 +25,7 @@ services:
     image: ghcr.io/gon3s/dlux-bot:latest
     environment:
       BACKEND_URL: http://backend:8000
+      API_TOKEN: ${API_TOKEN:?API_TOKEN is required}
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       DISCORD_GUILD: ${DISCORD_GUILD:-}
       DISCORD_CHANNEL_ID: ${DISCORD_CHANNEL_ID:-}

@@ -67,7 +67,7 @@ Everything runs in Docker. One port (`:8765`) exposes both the API and the pre-b
 
 ## 🚀 Quick start (Docker)
 
-**Minimum required - copy, fill in two values, run:**
+**Minimum required - copy, fill in the values, run:**
 
 ```yaml
 # docker-compose.minimal.yml
@@ -79,6 +79,7 @@ services:
     environment:
       DEBRID_PROVIDER: alldebrid
       ALLDEBRID_API_KEY: YOUR_KEY
+      API_TOKEN: YOUR_LONG_RANDOM_SECRET
       DOWNLOAD_PATH: /data/media
     volumes:
       - media:/data/media
@@ -106,6 +107,7 @@ docker compose up -d
 # .env - required
 DISCORD_TOKEN=your_discord_bot_token
 DISCORD_GUILD=your_server_id
+API_TOKEN=your_long_random_secret  # generate with: openssl rand -hex 32
 DEBRID_PROVIDER=alldebrid        # or realdebrid
 ALLDEBRID_API_KEY=your_key       # or REALDEBRID_API_TOKEN=
 DOWNLOAD_PATH=/data/media
@@ -137,6 +139,7 @@ The backend serves the pre-built frontend as static files - a single port handle
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `API_TOKEN` | Shared bearer token protecting HTTP, WebSocket and bot notifications | required |
 | `DISCORD_TOKEN` | Discord bot token | - |
 | `DISCORD_GUILD` | Discord server ID | - |
 | `DEBRID_PROVIDER` | `alldebrid` or `realdebrid` | `alldebrid` |
@@ -180,6 +183,8 @@ The backend serves the pre-built frontend as static files - a single port handle
 | `WS` | `/ws/queue` | Real-time queue state |
 
 A full [Bruno](https://www.usebruno.com/) collection is available in `bruno/`.
+All API calls require `Authorization: Bearer <API_TOKEN>`. The web interface
+exchanges this token for an HTTP-only session cookie on the login screen.
 
 ---
 
