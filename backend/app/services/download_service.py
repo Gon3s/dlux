@@ -14,13 +14,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.core import events
 from app.core.exceptions import DebridAPIError, DownloadError, DownloadNotFoundError
+from app.models.domain import (
+    DownloadStatus,
+    HistoryStatus,
+    MediaType,
+    ScraperSource,
+    parse_media_type,
+)
 from app.models.orm import Download, History
 from app.models.schemas import DownloadCreate, WsProgressEvent
 from app.scrapers.base import BaseScraper, get_scraper
 from app.services.debrid import DebridClient, get_debrid_client
 
-_SCRAPER_DOMAINS: dict[str, str] = {
-    "wawacity": "wawacity",
+_SCRAPER_DOMAINS: dict[str, ScraperSource] = {
+    "wawacity": ScraperSource.WAWACITY,
 }
 
 logger = logging.getLogger(__name__)
@@ -55,7 +62,7 @@ class DownloadService:
             source_url=str(data.source_url),
             media_type=data.media_type,
             destination=data.destination,
-            status="queued",
+            status=DownloadStatus.QUEUED,
             alternative_urls=(
                 json.dumps(data.alternative_urls) if data.alternative_urls else None
             ),
@@ -72,20 +79,7 @@ class DownloadService:
     async def list_active(self) -> list[Download]:
         result = await self._session.execute(
             select(Download)
-            .where(
-                Download.status.in_(
-                    [
-                        "queued",
-                        "scraping",
-                        "resolving",
-                        "debriding",
-                        "downloading",
-                        "error",
-                        "completed",
-                        "ready_for_client",
-                    ]
-                )
-            )
+            .where(Download.status.in_(list(DownloadStatus)))
             .order_by(Download.created_at.desc())
             .limit(50)
         )
@@ -99,12 +93,34 @@ class DownloadService:
         await self._session.commit()
         return True
 
+    async def cancel(self, download_id: str) -> Download | None:
+        """Persist cancellation after the queue has stopped the running job."""
+        download = await self.get(download_id)
+        if download is None:
+            return None
+        await self._set_status(
+            download,
+            DownloadStatus.CANCELLED,
+            speed_mbps=None,
+            completed_at=datetime.now(UTC),
+        )
+        await _emit(
+            download_id,
+            WsProgressEvent(
+                download_id=download_id,
+                status=DownloadStatus.CANCELLED,
+                progress_pct=download.progress_pct,
+                filename=download.filename,
+            ).model_dump(),
+        )
+        return download
+
     async def retry(self, download_id: str) -> Download | None:
         """Reset a failed download and re-enqueue it."""
         download = await self.get(download_id)
-        if download is None or download.status != "error":
+        if download is None or download.status != DownloadStatus.ERROR:
             return None
-        download.status = "queued"
+        download.status = DownloadStatus.QUEUED
         download.error = None
         download.progress_pct = 0.0
         download.speed_mbps = None
@@ -136,11 +152,13 @@ class DownloadService:
 
             if scraper is not None:
                 # Step 1 — scrape provider links from the source page
-                await self._set_status(download, "scraping")
+                await self._set_status(download, DownloadStatus.SCRAPING)
                 await _emit(
                     download_id,
                     WsProgressEvent(
-                        download_id=download_id, status="scraping", progress_pct=0.0
+                        download_id=download_id,
+                        status=DownloadStatus.SCRAPING,
+                        progress_pct=0.0,
                     ).model_dump(),
                 )
 
@@ -192,11 +210,13 @@ class DownloadService:
                 )
 
             # Steps 2+3 — resolve dl-protect → debrid, with fallback on other providers
-            await self._set_status(download, "resolving")
+            await self._set_status(download, DownloadStatus.RESOLVING)
             await _emit(
                 download_id,
                 WsProgressEvent(
-                    download_id=download_id, status="resolving", progress_pct=0.0
+                    download_id=download_id,
+                    status=DownloadStatus.RESOLVING,
+                    progress_pct=0.0,
                 ).model_dump(),
             )
 
@@ -211,12 +231,12 @@ class DownloadService:
                         dl_protect_url,
                     )
 
-                    await self._set_status(download, "debriding")
+                    await self._set_status(download, DownloadStatus.DEBRIDING)
                     await _emit(
                         download_id,
                         WsProgressEvent(
                             download_id=download_id,
-                            status="debriding",
+                            status=DownloadStatus.DEBRIDING,
                             progress_pct=0.0,
                         ).model_dump(),
                     )
@@ -245,7 +265,9 @@ class DownloadService:
                                     exc,
                                 )
                         if provider_url is None:
-                            link_scraper = scraper or get_scraper("wawacity")
+                            link_scraper = scraper or get_scraper(
+                                ScraperSource.WAWACITY
+                            )
                             provider_url = await link_scraper.resolve_link(
                                 dl_protect_url
                             )
@@ -284,7 +306,7 @@ class DownloadService:
             if download.destination == "client":
                 await self._set_status(
                     download,
-                    "completed",
+                    DownloadStatus.COMPLETED,
                     progress_pct=100.0,
                     filename=filename,
                     debrid_url=direct_url,
@@ -295,7 +317,7 @@ class DownloadService:
                     download_id,
                     WsProgressEvent(
                         download_id=download_id,
-                        status="completed",
+                        status=DownloadStatus.COMPLETED,
                         progress_pct=100.0,
                         filename=filename,
                         debrid_url=direct_url,
@@ -303,11 +325,13 @@ class DownloadService:
                 )
                 return
 
-            await self._set_status(download, "downloading")
+            await self._set_status(download, DownloadStatus.DOWNLOADING)
             await _emit(
                 download_id,
                 WsProgressEvent(
-                    download_id=download_id, status="downloading", progress_pct=0.0
+                    download_id=download_id,
+                    status=DownloadStatus.DOWNLOADING,
+                    progress_pct=0.0,
                 ).model_dump(),
             )
             await self._stream_to_disk(download, direct_url, filename)
@@ -316,14 +340,17 @@ class DownloadService:
         except Exception as exc:
             error_msg = str(exc) or type(exc).__name__
             await self._write_history(
-                download, download.filename, status="error", error=error_msg
+                download,
+                download.filename,
+                status=HistoryStatus.ERROR,
+                error=error_msg,
             )
-            await self._set_status(download, "error", error=error_msg)
+            await self._set_status(download, DownloadStatus.ERROR, error=error_msg)
             await _emit(
                 download_id,
                 WsProgressEvent(
                     download_id=download_id,
-                    status="error",
+                    status=DownloadStatus.ERROR,
                     progress_pct=download.progress_pct,
                     error=error_msg,
                 ).model_dump(),
@@ -401,8 +428,9 @@ class DownloadService:
         ext = Path(filename).suffix
         return f"{show} S{season:02d}E{episode:02d}{ext}"
 
-    def _resolve_dest(self, media_type: str, filename: str) -> Path:
+    def _resolve_dest(self, media_type: str | MediaType, filename: str) -> Path:
         """Return the full destination path based on media type and filename."""
+        media_type = parse_media_type(media_type)
         base = Path(settings.download_path)
         filename = self._safe_component(filename)
         if media_type == "films":
@@ -454,6 +482,7 @@ class DownloadService:
 
                 total = int(response.headers.get("Content-Length", 0))
                 f = await loop.run_in_executor(None, open, str(dest), "wb")
+                cancelled = False
                 try:
                     async for chunk in response.content.iter_chunked(_CHUNK_SIZE):
                         await loop.run_in_executor(None, f.write, chunk)
@@ -475,7 +504,7 @@ class DownloadService:
                                 download_id,
                                 WsProgressEvent(
                                     download_id=download_id,
-                                    status="downloading",
+                                    status=DownloadStatus.DOWNLOADING,
                                     progress_pct=progress,
                                     speed_mbps=speed_mbps,
                                     eta_s=eta_s,
@@ -487,18 +516,23 @@ class DownloadService:
                         if now - last_db_update >= _DB_UPDATE_INTERVAL:
                             await self._set_status(
                                 download,
-                                "downloading",
+                                DownloadStatus.DOWNLOADING,
                                 progress_pct=progress,
                                 speed_mbps=speed_mbps,
                                 filename=filename,
                             )
                             last_db_update = now
+                except asyncio.CancelledError:
+                    cancelled = True
+                    raise
                 finally:
                     await loop.run_in_executor(None, f.close)
+                    if cancelled:
+                        await asyncio.to_thread(dest.unlink, missing_ok=True)
 
         await self._set_status(
             download,
-            "completed",
+            DownloadStatus.COMPLETED,
             progress_pct=100.0,
             filename=filename,
             completed_at=datetime.now(UTC),
@@ -507,7 +541,7 @@ class DownloadService:
             download_id,
             WsProgressEvent(
                 download_id=download_id,
-                status="completed",
+                status=DownloadStatus.COMPLETED,
                 progress_pct=100.0,
                 filename=filename,
             ).model_dump(),
@@ -518,7 +552,7 @@ class DownloadService:
         self,
         download: Download,
         filename: str | None,
-        status: str = "completed",
+        status: HistoryStatus = HistoryStatus.COMPLETED,
         error: str | None = None,
     ) -> None:
         history = History(
@@ -534,7 +568,9 @@ class DownloadService:
         self._session.add(history)
         await self._session.commit()
 
-    async def _set_status(self, download: Download, status: str, **kwargs) -> None:
+    async def _set_status(
+        self, download: Download, status: DownloadStatus, **kwargs
+    ) -> None:
         download.status = status
         for key, value in kwargs.items():
             setattr(download, key, value)
