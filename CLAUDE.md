@@ -6,7 +6,7 @@ Application trois tiers pour rechercher et télécharger des films/séries/manga
 depuis Wawacity via AllDebrid.
 
 - **`backend/`** - FastAPI (Python 3.12) : toute la logique scraping, debrid, téléchargement, BDD
-- **`frontend/`** - Angular 21 + Tailwind CSS v3 : interface web principale
+- **`frontend/`** - Angular 21 + Tailwind CSS v4 : interface web principale
 - **`bot/`** - Discord Bot thin client : appelle le backend via HTTP
 
 Docs complètes : `docs/plan-v2.md` et `docs/architecture-v2.md`
@@ -237,7 +237,7 @@ et à la liste frontend `SCRAPER_SOURCES`. Le registre reste automatique.
 
 ### TypeScript (frontend)
 - **Angular 21 standalone components** uniquement - pas de NgModule.
-- **Tailwind CSS v3.4** actuellement. La migration v4 est suivie par l'issue #71.
+- **Tailwind CSS v4.3** avec le plugin PostCSS `@tailwindcss/postcss`.
 - **`signal()` / `computed()`** pour l'état local quand c'est adapté.
 - **`linkedSignal()`** pour l'état dérivé mais modifiable.
 - **`resource`/RxJS** selon le pattern déjà présent dans la feature concernée.

@@ -6,7 +6,7 @@ Interface web Angular 21 du projet v2. Elle consomme le backend FastAPI via
 ## Stack
 
 - Angular 21
-- Tailwind CSS 3.4
+- Tailwind CSS 4.3
 - RxJS
 - Standalone components et lazy routes par feature
 

@@ -6,7 +6,7 @@
     <p class="text-[10px] tracking-wider mt-0.5" style="color:#3a4022">ALL PAST DOWNLOADS</p>
   </div>
   <div class="flex gap-1.5 text-[9px]">
-    <span class="px-2 py-1 rounded" style="background:rgba(62,67,46,.4);color:#6b7a4a;border:1px solid #1a1f10">
+    <span class="px-2 py-1 rounded-sm" style="background:rgba(62,67,46,.4);color:#6b7a4a;border:1px solid #1a1f10">
       {{ total() }} TOTAL
     </span>
   </div>
@@ -27,12 +27,12 @@
              [ngModel]="filterQuery()" (ngModelChange)="filterQuery.set($event)"
              placeholder="SEARCH…"
              (keyup.enter)="applyFilters()"
-             class="w-full pl-7 pr-3 py-1.5 rounded text-xs"
+             class="w-full pl-7 pr-3 py-1.5 rounded-sm text-xs"
              style="background:#111;border:1px solid #1a1f10;color:#c8d890;font-family:inherit;outline:none" />
     </div>
 
     <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event); applyFilters()"
-            class="rounded px-2.5 py-1.5 text-xs"
+            class="rounded-sm px-2.5 py-1.5 text-xs"
             style="background:#111;border:1px solid #1a1f10;color:#c8d890;font-family:inherit">
       <option value="">ALL STATUS</option>
       <option value="completed">SUCCESS</option>
@@ -40,7 +40,7 @@
     </select>
 
     <select [ngModel]="filterProvider()" (ngModelChange)="filterProvider.set($event); applyFilters()"
-            class="rounded px-2.5 py-1.5 text-xs"
+            class="rounded-sm px-2.5 py-1.5 text-xs"
             style="background:#111;border:1px solid #1a1f10;color:#c8d890;font-family:inherit">
       @for (p of providers; track p) {
         <option [value]="p">{{ p || 'ALL PROVIDERS' }}</option>
@@ -49,12 +49,12 @@
 
     <input type="date"
            [ngModel]="filterFrom()" (ngModelChange)="filterFrom.set($event); applyFilters()"
-           class="rounded px-2.5 py-1.5 text-xs"
+           class="rounded-sm px-2.5 py-1.5 text-xs"
            style="background:#111;border:1px solid #1a1f10;color:#4a5a2a;font-family:inherit" />
 
     <input type="date"
            [ngModel]="filterTo()" (ngModelChange)="filterTo.set($event); applyFilters()"
-           class="rounded px-2.5 py-1.5 text-xs"
+           class="rounded-sm px-2.5 py-1.5 text-xs"
            style="background:#111;border:1px solid #1a1f10;color:#4a5a2a;font-family:inherit" />
   </div>
 
@@ -62,7 +62,7 @@
   @if (activeFilters().length > 0) {
     <div class="flex gap-1.5 mb-3 flex-wrap">
       @for (f of activeFilters(); track f.key) {
-        <span class="flex items-center gap-1 text-[9px] px-2 py-1 rounded"
+        <span class="flex items-center gap-1 text-[9px] px-2 py-1 rounded-sm"
               style="background:rgba(167,209,41,.1);color:var(--lime);border:1px solid rgba(167,209,41,.2)">
           {{ f.label }}
           <button (click)="clearFilter(f.key)" class="opacity-60 hover:opacity-100 ml-0.5">×</button>
@@ -108,7 +108,7 @@
               {{ item.downloaded_at | slice:0:16 }}
             </td>
             <td class="px-4 py-3">
-              <span class="text-[9px] font-black px-1.5 py-0.5 rounded"
+              <span class="text-[9px] font-black px-1.5 py-0.5 rounded-sm"
                     style="background:rgba(167,209,41,.1);color:var(--lime);border:1px solid rgba(167,209,41,.2)">
                 {{ item.source }}
               </span>
@@ -124,7 +124,7 @@
             <td class="px-4 py-3 text-right">
               <div class="row-act flex gap-1 justify-end">
                 <button (click)="delete(item.id)"
-                        class="px-2 py-1 rounded text-[9px] transition"
+                        class="px-2 py-1 rounded-sm text-[9px] transition"
                         style="background:transparent;border:1px solid #1a1f10;color:#3a4022"
                         onmouseover="this.style.borderColor='#5a1a1a';this.style.color='#c04040'"
                         onmouseout="this.style.borderColor='#1a1f10';this.style.color='#3a4022'">✕</button>
@@ -152,7 +152,7 @@
     </p>
     <div class="flex items-center gap-2">
       <select [ngModel]="pageSize()" (ngModelChange)="pageSize.set($event); applyFilters()"
-              class="rounded px-2 py-1 text-[9px]"
+              class="rounded-sm px-2 py-1 text-[9px]"
               style="background:#111;border:1px solid #1a1f10;color:#c8d890;font-family:inherit">
         @for (s of pageSizes; track s) {
           <option [value]="s">{{ s }} / PAGE</option>
@@ -160,7 +160,7 @@
       </select>
       <div class="flex gap-1 text-[9px]">
         <button (click)="goPage(params().page - 1)" [disabled]="params().page === 1"
-                class="px-2.5 py-1 rounded transition"
+                class="px-2.5 py-1 rounded-sm transition"
                 [style.opacity]="params().page === 1 ? '0.3' : '1'"
                 style="background:transparent;border:1px solid #1a1f10;color:#6b7a4a">←</button>
         @for (p of pageNumbers(); track $index) {
@@ -168,14 +168,14 @@
             <span class="px-1.5 py-1" style="color:#2d3520">…</span>
           } @else {
             <button (click)="goPage(p)"
-                    class="px-2.5 py-1 rounded font-black transition"
+                    class="px-2.5 py-1 rounded-sm font-black transition"
                     [style.background]="params().page === p ? 'var(--lime)' : 'transparent'"
                     [style.color]="params().page === p ? '#000' : '#6b7a4a'"
                     [style.border]="params().page === p ? 'none' : '1px solid #1a1f10'">{{ p }}</button>
           }
         }
         <button (click)="goPage(params().page + 1)" [disabled]="params().page === totalPages()"
-                class="px-2.5 py-1 rounded transition"
+                class="px-2.5 py-1 rounded-sm transition"
                 [style.opacity]="params().page === totalPages() ? '0.3' : '1'"
                 style="background:transparent;border:1px solid #1a1f10;color:#6b7a4a">→</button>
       </div>
