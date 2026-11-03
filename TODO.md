@@ -8,8 +8,12 @@ humains, à Codex et à Claude Code.
 
 - [x] Valider `source_url` et `alternative_urls` : protocoles autorisés, nombre et
   taille maximum, rejet de `localhost` et des adresses IP locales ou réservées.
+  La protection contre le DNS rebinding reste suivie en P2.
 - [x] Remplacer les chaînes libres de `media_type`, `status` et `source` par des
-  types ou enums partagés.
+  types ou enums partagés. Les alias historiques du bot sont normalisés par le
+  backend.
+- [ ] Authentifier les endpoints HTTP et WebSocket, ainsi que le serveur interne
+  de notification du bot, avant toute exposition publique hors réseau de confiance.
 - [ ] Ajouter des limites de requêtes et de taille de file pour empêcher le spam,
   l'épuisement du quota debrid et le remplissage du disque.
 - [ ] Restreindre `PUT /settings` à une liste de clés et valider chaque valeur.
@@ -27,8 +31,21 @@ humains, à Codex et à Claude Code.
 - [ ] Empêcher l'écrasement silencieux d'un fichier final existant.
 - [ ] Définir le comportement en cas d'espace disque insuffisant avant et pendant
   un téléchargement.
+- [ ] Distinguer les erreurs temporaires de scraping/debrid des erreurs définitives,
+  puis appliquer un retry borné et le fallback fournisseur sur les timeouts et
+  réponses HTTP 5xx.
+- [ ] Garantir qu'une erreur SQLAlchemy déclenche un rollback ou une nouvelle
+  session avant d'enregistrer l'échec du téléchargement.
 - [ ] Faire appliquer immédiatement une modification de
   `max_concurrent_downloads`, ou indiquer clairement qu'un redémarrage est requis.
+
+## P1 - Frontend temps réel
+
+- [ ] Choisir automatiquement `wss://` lorsque l'interface est servie en HTTPS.
+- [ ] Fermer les WebSockets des téléchargements terminés et reconnecter
+  `watchDownload()` après une coupure transitoire.
+- [ ] Gérer les erreurs des mutations optimistes et permettre aux événements
+  WebSocket de remettre explicitement `error` ou `debrid_url` à `null`.
 
 ## P1 - Données et migrations
 
@@ -46,11 +63,11 @@ humains, à Codex et à Claude Code.
   depuis le seul nombre total d'épisodes.
 - [ ] Gérer les suppressions, renumérotations et changements d'ordre de la source.
 - [ ] Ajouter un verrou pour empêcher deux vérifications simultanées du scheduler.
-- [ ] Authentifier le serveur interne de notification du bot ou limiter strictement
-  son exposition au réseau Docker.
 
 ## P2 - Tests et qualité
 
+- [x] Restaurer la CI de `main` en appliquant le format Ruff attendu aux fichiers
+  introduits par la centralisation des types.
 - [ ] Ajouter des tests frontend sur les parcours recherche, lancement, annulation,
   reprise WebSocket et modification des paramètres.
 - [ ] Ajouter des tests d'intégration pour interruption et reprise d'un fichier
@@ -61,6 +78,8 @@ humains, à Codex et à Claude Code.
 - [ ] Ajouter le lint et les tests du bot à la CI.
 - [ ] Tester les migrations Alembic sur une base vierge et sur une base de la
   version précédente.
+- [ ] Résorber le backlog Dependabot : fermer les PR remplacées, rebaser les mises
+  à jour encore utiles et regrouper les upgrades frontend qui se chevauchent.
 
 ## P2 - Exploitation et déploiement
 
@@ -80,8 +99,8 @@ humains, à Codex et à Claude Code.
 
 - [ ] Centraliser les listes de fournisseurs et leurs priorités actuellement
   répétées dans le backend et le frontend.
-- [ ] Distinguer les erreurs temporaires de scraping/debrid des erreurs définitives
-  afin d'appliquer une politique de retry bornée.
+- [ ] Réconcilier les issues GitHub #53, #107 et #108 avec l'implémentation et le
+  comportement observé en production, puis les fermer ou recadrer.
 - [ ] Mettre à jour les diagrammes de `docs/architecture-v2.md` lorsqu'un flux ou
   un modèle persistant change.
 - [ ] Évaluer l'ajout d'un second scraper uniquement lorsqu'une source concrète
