@@ -78,7 +78,7 @@ humains, à Codex et à Claude Code.
 - [ ] Ajouter le lint et les tests du bot à la CI.
 - [ ] Tester les migrations Alembic sur une base vierge et sur une base de la
   version précédente.
-- [ ] Résorber le backlog Dependabot : fermer les PR remplacées, rebaser les mises
+- [x] Résorber le backlog Dependabot : fermer les PR remplacées, rebaser les mises
   à jour encore utiles et regrouper les upgrades frontend qui se chevauchent.
 
 ## P2 - Exploitation et déploiement
