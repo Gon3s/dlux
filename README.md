@@ -124,7 +124,7 @@ Images are built by GitHub Actions on every push to `main` and published to `ghc
 ```
 dlux/
 ├── backend/    FastAPI - SQLite - Alembic - aiohttp - SeleniumBase
-├── frontend/   Angular 21 - Tailwind CSS v3 - Signals - WebSocket
+├── frontend/   Angular 21 - Tailwind CSS v4 - Signals - WebSocket
 ├── bot/        Discord thin client -> HTTP calls to the backend
 └── deploy/     systemd units (alternative to Docker)
 ```
