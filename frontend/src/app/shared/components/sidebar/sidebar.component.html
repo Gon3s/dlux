@@ -86,6 +86,8 @@
     <span class="text-[9px] tracking-widest" style="color:#4a5a2a">
       {{ wsLive() ? 'WS LIVE' : (apiOnline() ? 'API ONLINE' : 'OFFLINE') }}
     </span>
+    <button type="button" class="ml-auto text-[9px] tracking-widest hover:text-white"
+            style="color:#6b7a4a" (click)="logout()">LOGOUT</button>
   </div>
 
 </aside>

@@ -2,7 +2,6 @@ import logging
 from typing import Any
 
 import aiohttp
-
 from domain import Category, MediaTypeInput, ScraperSource
 
 logger = logging.getLogger(__name__)
@@ -17,8 +16,9 @@ class BackendError(Exception):
 
 
 class BackendClient:
-    def __init__(self, base_url: str) -> None:
+    def __init__(self, base_url: str, api_token: str) -> None:
         self._base_url = base_url.rstrip("/")
+        self._api_token = api_token
         self._session: aiohttp.ClientSession | None = None
 
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -40,24 +40,38 @@ class BackendClient:
     ) -> Any:
         url = f"{self._base_url}{path}"
         session = await self._get_session()
+        request_headers = dict(kwargs.pop("headers", {}))
+        request_headers["Authorization"] = f"Bearer {self._api_token}"
 
         last_exc: Exception | None = None
         for attempt in range(retries + 1):
             try:
-                async with session.request(method, url, **kwargs) as resp:
+                async with session.request(
+                    method, url, headers=request_headers, **kwargs
+                ) as resp:
                     if resp.status in _RETRY_STATUSES and attempt < retries:
-                        logger.warning("Backend %s %s → %s, retry %d", method, path, resp.status, attempt + 1)
+                        logger.warning(
+                            "Backend %s %s → %s, retry %d",
+                            method,
+                            path,
+                            resp.status,
+                            attempt + 1,
+                        )
                         continue
                     if resp.status >= 400:
                         body = await resp.text()
-                        raise BackendError(resp.status, f"HTTP {resp.status}: {body[:200]}")
+                        raise BackendError(
+                            resp.status, f"HTTP {resp.status}: {body[:200]}"
+                        )
                     if resp.status == 204:
                         return None
                     return await resp.json()
             except aiohttp.ClientError as exc:
                 last_exc = exc
                 if attempt < retries:
-                    logger.warning("Backend connection error, retry %d: %s", attempt + 1, exc)
+                    logger.warning(
+                        "Backend connection error, retry %d: %s", attempt + 1, exc
+                    )
                     continue
                 raise BackendError(0, f"Connection error: {exc}") from exc
 

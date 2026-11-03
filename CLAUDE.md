@@ -79,6 +79,7 @@ Variables à configurer dans l'UI Portainer (section "Environment variables") :
 ```
 DISCORD_TOKEN=...
 DISCORD_GUILD=...
+API_TOKEN=... # secret long et aléatoire, partagé par le backend et le bot
 DEBRID_PROVIDER=alldebrid
 ALLDEBRID_API_KEY=...
 DOWNLOAD_PATH=/data/media
@@ -156,6 +157,7 @@ Copier `.env.example` → `.env` à la racine. Variables clés :
 
 | Variable | Description |
 |---|---|
+| `API_TOKEN` | Secret obligatoire protégeant HTTP, WebSocket et les notifications internes |
 | `DISCORD_TOKEN` | Token du bot Discord |
 | `DISCORD_GUILD` | ID du serveur Discord |
 | `DEBRID_PROVIDER` | Fournisseur debrid (`alldebrid` ou `realdebrid`) |
@@ -171,6 +173,11 @@ Copier `.env.example` → `.env` à la racine. Variables clés :
 | `DISCORD_CHANNEL_ID` | ID du channel Discord pour les notifications de séries |
 | `BOT_NOTIFY_URL` | URL interne du bot pour les notifs (défaut Docker: `http://bot:8766/notify`) |
 | `APP_PUBLIC_URL` | URL publique de l'app pour les liens dans les notifs Discord |
+
+L'interface demande `API_TOKEN` à la connexion puis le conserve dans un cookie de
+session HTTP-only. Les clients d'API et le bot utilisent
+`Authorization: Bearer <API_TOKEN>`. Générer le secret avec
+`openssl rand -hex 32` et utiliser la même valeur pour les services backend et bot.
 
 ---
 

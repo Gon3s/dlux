@@ -3,6 +3,7 @@ import asyncio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.core import events
+from app.core.auth import websocket_is_authenticated
 from app.models.domain import TERMINAL_DOWNLOAD_STATUSES
 
 router = APIRouter()
@@ -13,6 +14,9 @@ _PING_INTERVAL = 30.0  # seconds
 @router.websocket("/ws/downloads/{download_id}")
 async def ws_download_progress(websocket: WebSocket, download_id: str) -> None:
     """Stream progress events for a specific download."""
+    if not websocket_is_authenticated(websocket):
+        await websocket.close(code=1008, reason="Invalid or missing API token")
+        return
     await websocket.accept()
     q = events.subscribe(download_id)
     try:
@@ -33,6 +37,9 @@ async def ws_download_progress(websocket: WebSocket, download_id: str) -> None:
 @router.websocket("/ws/queue")
 async def ws_queue(websocket: WebSocket) -> None:
     """Stream progress events for all downloads (queue overview)."""
+    if not websocket_is_authenticated(websocket):
+        await websocket.close(code=1008, reason="Invalid or missing API token")
+        return
     await websocket.accept()
     q = events.subscribe(events.QUEUE_CHANNEL)
     try:
