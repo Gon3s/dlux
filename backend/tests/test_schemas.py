@@ -188,9 +188,7 @@ class TestSearchResult:
 
     def test_unknown_source_rejected(self):
         with pytest.raises(ValidationError):
-            SearchResult(
-                title="Inception", url="https://example.com", source="unknown"
-            )
+            SearchResult(title="Inception", url="https://example.com", source="unknown")
 
 
 class TestSettingsUpdate:
