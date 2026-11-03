@@ -75,9 +75,7 @@ def _normalize_media_type(value: object) -> object:
 
 
 _CanonicalMediaType = Annotated[MediaType, BeforeValidator(_normalize_media_type)]
-_HistoryMediaType = Annotated[
-    HistoryMediaType, BeforeValidator(_normalize_media_type)
-]
+_HistoryMediaType = Annotated[HistoryMediaType, BeforeValidator(_normalize_media_type)]
 
 
 def _validate_download_url(value: str) -> str:
