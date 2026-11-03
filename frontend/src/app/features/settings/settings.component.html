@@ -9,7 +9,7 @@
   </div>
   @if (diskFreeGb() !== undefined) {
     <span
-      class="text-[9px] font-mono px-2 py-1 rounded"
+      class="text-[9px] font-mono px-2 py-1 rounded-sm"
       style="background: rgba(62, 67, 46, 0.3); color: #6b7a4a; border: 1px solid #1a1f10"
     >
       {{ diskFreeGb() | number: '1.0-1' }} GB FREE
@@ -18,7 +18,7 @@
   <button
     (click)="save()"
     [disabled]="saving()"
-    class="px-5 py-2 rounded text-xs font-black transition flex items-center gap-2"
+    class="px-5 py-2 rounded-sm text-xs font-black transition flex items-center gap-2"
     style="background: var(--lime); color: #000"
   >
     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@
 
 @if (saved()) {
   <div
-    class="fixed bottom-5 right-5 z-50 text-black text-xs font-black px-4 py-2.5 rounded flex items-center gap-2 tracking-wider"
+    class="fixed bottom-5 right-5 z-50 text-black text-xs font-black px-4 py-2.5 rounded-sm flex items-center gap-2 tracking-wider"
     style="background: var(--lime)"
   >
     ✓ SAVED
@@ -59,7 +59,7 @@
             [ngModel]="wawacityUrl()"
             (ngModelChange)="wawacityUrl.set($event)"
             placeholder="https://www.wawacity.vip/"
-            class="w-full rounded px-3 py-2 text-xs"
+            class="w-full rounded-sm px-3 py-2 text-xs"
             style="
               background: #111;
               border: 1px solid #1a1f10;
@@ -74,7 +74,7 @@
           <label class="text-[9px] tracking-widest block mb-1" style="color: #3a4022"
             >DEFAULT CATEGORY</label
           >
-          <div class="flex rounded overflow-hidden" style="border: 1px solid #1a1f10">
+          <div class="flex rounded-sm overflow-hidden" style="border: 1px solid #1a1f10">
             @for (cat of categories; track cat) {
               <button
                 class="flex-1 py-2 text-[10px] font-black transition"
@@ -121,7 +121,7 @@
           >
             <span class="text-[9px] font-mono w-4" style="color: #3a4022">#{{ i + 1 }}</span>
             <div
-              class="w-6 h-6 rounded flex items-center justify-center font-black text-[10px]"
+              class="w-6 h-6 rounded-sm flex items-center justify-center font-black text-[10px]"
               [style.background]="
                 isProviderEnabled(p) ? 'rgba(167,209,41,.12)' : 'rgba(62,67,46,.2)'
               "
@@ -161,7 +161,7 @@
         <p class="text-[9px] tracking-widest font-black" style="color: #4a5a2a">// DEBRID API</p>
         @if (debridOk() !== undefined) {
           <span
-            class="text-[9px] font-black px-2 py-0.5 rounded"
+            class="text-[9px] font-black px-2 py-0.5 rounded-sm"
             [style.background]="debridOk() ? 'rgba(167,209,41,.12)' : 'rgba(80,10,10,.3)'"
             [style.color]="debridOk() ? 'var(--lime)' : '#c04040'"
             [style.border]="
@@ -177,7 +177,7 @@
           <label class="text-[9px] tracking-widest block mb-1" style="color: #3a4022"
             >ACTIVE PROVIDER</label
           >
-          <div class="flex rounded overflow-hidden" style="border: 1px solid #1a1f10">
+          <div class="flex rounded-sm overflow-hidden" style="border: 1px solid #1a1f10">
             @for (provider of debridProviders; track provider.value) {
               <button
                 class="flex-1 py-2 text-[10px] font-black transition"
@@ -200,7 +200,7 @@
             [type]="showApiKey() ? 'text' : 'password'"
             [ngModel]="activeDebridSecret()"
             (ngModelChange)="setActiveDebridSecret($event)"
-            class="flex-1 rounded px-3 py-2 text-xs"
+            class="flex-1 rounded-sm px-3 py-2 text-xs"
             style="
               background: #111;
               border: 1px solid #1a1f10;
@@ -211,7 +211,7 @@
           />
           <button
             (click)="showApiKey.set(!showApiKey())"
-            class="rounded px-3 py-2 text-[10px] transition"
+            class="rounded-sm px-3 py-2 text-[10px] transition"
             style="background: transparent; border: 1px solid #1a1f10; color: #6b7a4a"
           >
             {{ showApiKey() ? 'HIDE' : 'SHOW' }}
@@ -230,7 +230,7 @@
       </p>
       <div class="flex flex-wrap gap-2">
         <button
-          class="px-3 py-2 rounded text-[10px] transition"
+          class="px-3 py-2 rounded-sm text-[10px] transition"
           style="background: transparent; border: 1px solid rgba(120, 20, 20, 0.4); color: #c04040"
           onmouseover="this.style.color = '#ef4444'"
           onmouseout="this.style.color = '#c04040'"
@@ -238,7 +238,7 @@
           CLEAR HISTORY
         </button>
         <button
-          class="px-3 py-2 rounded text-[10px] transition"
+          class="px-3 py-2 rounded-sm text-[10px] transition"
           style="background: transparent; border: 1px solid rgba(120, 20, 20, 0.4); color: #c04040"
           onmouseover="this.style.color = '#ef4444'"
           onmouseout="this.style.color = '#c04040'"

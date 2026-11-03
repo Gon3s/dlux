@@ -5,12 +5,12 @@
 La v2 est désormais l'architecture principale du dépôt `main`.
 
 - **FastAPI backend** — couche logique partagée (scraping, debrid, téléchargement, BDD)
-- **Angular 21 + Tailwind CSS v3 frontend** — interface web principale
+- **Angular 21 + Tailwind CSS v4 frontend** — interface web principale
 - **Discord bot allégé** — thin client qui appelle le backend
 - **Déploiement systemd** — `deploy/install.sh`, `dl_backend.service`, `discord_bot.service`
 
 Docker Compose reste à faire et est suivi par l'issue #44. La migration
-Tailwind CSS v4 reste à faire et est suivie par l'issue #71.
+La migration vers Tailwind CSS v4.3 est terminée.
 
 ---
 
@@ -45,7 +45,7 @@ dlux/
 │   ├── alembic/                 # Migrations BDD
 │   └── pyproject.toml
 │
-├── frontend/                    # Angular 21 + Tailwind 3
+├── frontend/                    # Angular 21 + Tailwind 4
 │   ├── src/app/
 │   │   ├── features/
 │   │   │   ├── search/          # Recherche + sélection résultats
@@ -151,11 +151,11 @@ class BaseScraper(ABC):
 
 ---
 
-## Frontend — Angular 21 + Tailwind 3
+## Frontend — Angular 21 + Tailwind 4
 
 ### Setup
 - Angular 21 (standalone components, signals)
-- Tailwind CSS v3.4
+- Tailwind CSS v4.3
 - Angular HttpClient vers le backend FastAPI
 - WebSocket natif (ou RxJS WebSocketSubject) pour la progression
 

@@ -6,7 +6,7 @@
 graph TB
     subgraph Clients
         DC[🤖 Discord Bot<br/>thin client HTTP]
-        WB[🌐 Navigateur<br/>Angular 21 + Tailwind 3]
+        WB[🌐 Navigateur<br/>Angular 21 + Tailwind 4]
     end
 
     subgraph Backend["⚙️ Backend FastAPI :8000"]
@@ -356,7 +356,7 @@ dlux/                               ← monorepo racine
 │   │   └── download.py             ← !url, !status → POST /api/v1/downloads
 │   └── pyproject.toml              ← sans selenium/pandas/beautifulsoup4
 │
-├── frontend/                       ← Angular 21 + Tailwind CSS v3
+├── frontend/                       ← Angular 21 + Tailwind CSS v4
 │   ├── src/app/
 │   │   ├── core/
 │   │   │   ├── models/

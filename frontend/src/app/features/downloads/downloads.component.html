@@ -7,25 +7,25 @@
   </div>
   <div class="flex gap-1.5 text-[9px] tracking-wider">
     @if (active().length > 0) {
-      <span class="px-2 py-1 rounded"
+      <span class="px-2 py-1 rounded-sm"
             style="background:rgba(167,209,41,.12);color:var(--lime);border:1px solid rgba(167,209,41,.2)">
         {{ active().length }} ACTIVE
       </span>
     }
     @if (queued().length > 0) {
-      <span class="px-2 py-1 rounded"
+      <span class="px-2 py-1 rounded-sm"
             style="background:rgba(97,111,57,.15);color:#8a9a55;border:1px solid #2d3520">
         {{ queued().length }} QUEUED
       </span>
     }
     @if (done().length > 0) {
-      <span class="px-2 py-1 rounded"
+      <span class="px-2 py-1 rounded-sm"
             style="background:rgba(62,67,46,.4);color:#6b7a4a;border:1px solid #1a1f10">
         {{ done().length }} DONE
       </span>
     }
     @if (failed().length > 0) {
-      <span class="px-2 py-1 rounded"
+      <span class="px-2 py-1 rounded-sm"
             style="background:rgba(80,10,10,.3);color:#c04040;border:1px solid rgba(120,20,20,.3)">
         {{ failed().length }} ERR
       </span>
@@ -43,7 +43,7 @@
         @for (d of active(); track d.id) {
           <div class="rounded-lg p-4" style="background:#0c0c0c;border:1px solid #1a1f10">
             <div class="flex items-start gap-3 mb-3">
-              <div class="w-8 h-8 rounded flex items-center justify-center shrink-0"
+              <div class="w-8 h-8 rounded-sm flex items-center justify-center shrink-0"
                    style="background:rgba(167,209,41,.1);border:1px solid rgba(167,209,41,.2)">
                 <svg class="w-4 h-4" style="color:var(--lime)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -55,7 +55,7 @@
                 <p class="text-[9px] font-mono" style="color:#3a4022">{{ statusLabel(d.status) }}</p>
               </div>
               <button (click)="cancel(d.id)"
-                      class="w-7 h-7 rounded flex items-center justify-center transition text-xs shrink-0"
+                      class="w-7 h-7 rounded-sm flex items-center justify-center transition text-xs shrink-0"
                       style="background:transparent;border:1px solid #1a1f10;color:#3a4022"
                       onmouseover="this.style.borderColor='#5a1a1a';this.style.color='#c04040'"
                       onmouseout="this.style.borderColor='#1a1f10';this.style.color='#3a4022'">✕</button>
@@ -142,7 +142,7 @@
               @if (d.status === 'completed') {
                 @if (d.debrid_url) {
                   <a [href]="d.debrid_url" target="_blank" rel="noopener"
-                     class="text-[9px] font-black px-2 py-1 rounded transition"
+                     class="text-[9px] font-black px-2 py-1 rounded-sm transition"
                      style="background:rgba(167,209,41,.12);color:var(--lime);border:1px solid rgba(167,209,41,.2)">
                     ↓ RÉCUPÉRER
                   </a>
@@ -153,7 +153,7 @@
               }
               @if (d.status === 'error') {
                 <button (click)="retry(d.id)"
-                        class="text-[9px] font-black px-2 py-1 rounded transition"
+                        class="text-[9px] font-black px-2 py-1 rounded-sm transition"
                         style="background:rgba(167,209,41,.08);color:#8a9a55;border:1px solid #2d3520"
                         onmouseover="this.style.background='rgba(167,209,41,.15)';this.style.color='var(--lime)';this.style.borderColor='rgba(167,209,41,.3)'"
                         onmouseout="this.style.background='rgba(167,209,41,.08)';this.style.color='#8a9a55';this.style.borderColor='#2d3520'">
@@ -161,7 +161,7 @@
                 </button>
               }
               <button (click)="remove(d.id)"
-                      class="w-7 h-7 rounded flex items-center justify-center transition text-xs shrink-0 ml-1"
+                      class="w-7 h-7 rounded-sm flex items-center justify-center transition text-xs shrink-0 ml-1"
                       style="background:transparent;border:1px solid #1a1f10;color:#3a4022"
                       onmouseover="this.style.borderColor='#5a1a1a';this.style.color='#c04040'"
                       onmouseout="this.style.borderColor='#1a1f10';this.style.color='#3a4022'">✕</button>
