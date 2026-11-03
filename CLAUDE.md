@@ -138,11 +138,11 @@ sudo systemctl restart dl_backend.service
 
 ### WSL / Node
 
-Ne pas utiliser le `npm` Windows depuis WSL. Installer Node dans WSL ou utiliser
-le runtime local si présent :
+Ne pas utiliser le `npm` Windows depuis WSL. Installer Node 22.22.3 ou une
+version compatible plus récente dans WSL :
 
 ```bash
-export PATH="$PWD/.codex/runtime/node-v22.12.0-linux-x64/bin:$PATH"
+node --version
 cd frontend
 npm ci
 npm run build
