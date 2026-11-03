@@ -79,11 +79,7 @@ class DownloadService:
     async def list_active(self) -> list[Download]:
         result = await self._session.execute(
             select(Download)
-            .where(
-                Download.status.in_(
-                    list(DownloadStatus)
-                )
-            )
+            .where(Download.status.in_(list(DownloadStatus)))
             .order_by(Download.created_at.desc())
             .limit(50)
         )
